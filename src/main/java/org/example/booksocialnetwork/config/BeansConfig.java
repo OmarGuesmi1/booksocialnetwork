@@ -3,6 +3,7 @@ package org.example.booksocialnetwork.config;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -33,6 +34,13 @@ public class BeansConfig {
           return   config.getAuthenticationManager();
 
         }
+
+        @Bean
+        public AuditorAware<Integer> auditorAware(){
+            return new ApplicationAuditAware();
+        }
+
+
         @Bean
         public PasswordEncoder passwordEncoder() {
             return new BCryptPasswordEncoder();
