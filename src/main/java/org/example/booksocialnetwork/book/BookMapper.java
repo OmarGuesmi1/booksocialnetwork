@@ -1,5 +1,6 @@
 package org.example.booksocialnetwork.book;
 
+import org.example.booksocialnetwork.file.FileUtils;
 import org.example.booksocialnetwork.history.BookTransactionHistory;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +30,7 @@ public class BookMapper {
                 .archived(book.isArchived())
                 .shareable(book.isShareable())
                 .owner(book.getOwner().fullname())
+                .cover(FileUtils.readFileFromLocation(book.getBookCover()))
                 .build();
     }
 

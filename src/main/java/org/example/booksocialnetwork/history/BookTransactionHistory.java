@@ -21,7 +21,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 public class BookTransactionHistory extends BaseEntity {
 
     @ManyToOne
-    @Column(name = "user_id")
+    @JoinColumn(name = "user_id")
     private User user;
     @ManyToOne
     @JoinColumn(name = "book_id")

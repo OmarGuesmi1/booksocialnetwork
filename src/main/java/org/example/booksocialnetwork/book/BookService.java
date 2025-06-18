@@ -209,7 +209,7 @@ public class BookService {
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(()-> new EntityNotFoundException("No book found with ID:: " + bookId)); // that means in the database u cannot found it
         User user = (User) connectedUser.getPrincipal();
-        var bookCover = fileStorageService.saveFile(file,book,user.getId());
+        var bookCover = fileStorageService.saveFile(file,user.getId());
         book.setBookCover(bookCover);
         bookRepository.save(book);
         }
