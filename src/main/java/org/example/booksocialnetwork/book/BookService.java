@@ -150,7 +150,7 @@ public class BookService {
 
     public Integer borrowBook(Integer bookId, Authentication connectedUser) {
         Book book = bookRepository.findById(bookId)
-                .orElseThrow(()-> new EntityNotFoundException("No book found with ID:: " + bookId)); // that means in the data base u cannot found it
+                .orElseThrow(()-> new EntityNotFoundException("No book found with ID:: " + bookId)); // that means in the database u cannot found it
 
         if (book.isArchived() || !book.isShareable()){
             throw new OperationNotpermittedException("The requested book cannot be borrowed since it is archived or not shareable");
@@ -161,7 +161,7 @@ public class BookService {
         }
         final boolean isAlreadyBorrowed = bookTransactionHistoryRepository.isAlreadyBorrowedByUser(bookId,user.getId());
         if (isAlreadyBorrowed){
-            throw new OperationNotpermittedException("The requested book us already borrowed");  // it means that u r not allowed to do it
+            throw new OperationNotpermittedException("The requested book us already borrowed");  // it means that you are not allowed to do it
         }
         BookTransactionHistory bookTransactionHistory = BookTransactionHistory.builder()
                 .user(user)
