@@ -3,6 +3,7 @@ package org.example.booksocialnetwork.book;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.example.booksocialnetwork.common.PageResponse;
+import org.example.booksocialnetwork.exception.OperationNotpermittedException;
 import org.example.booksocialnetwork.history.BookTransactionHistory;
 import org.example.booksocialnetwork.history.BookTransactionHistoryRepository;
 import org.example.booksocialnetwork.user.User;
@@ -19,6 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @AllArgsConstructor
@@ -84,13 +86,52 @@ public class BookService {
         );
     }
 
-    public PageResponse<BookResponse> findAllBorrowedBooks(int page, int size, Authentication connectedUser) {
+    public PageResponse<BorrowedBookResponse> findAllBorrowedBooks(int page, int size, Authentication connectedUser) {
         User user = (User) connectedUser.getPrincipal();
         Pageable pageable = PageRequest.of(page,size, Sort.by("createdDate").descending());
         Page<BookTransactionHistory> alloBorrowedBooks =bookTransactionHistoryRepository.findAllBorrowedBooks(pageable, user.getId());
-        List<BorrowedBookResponse> bookResponses = alloBorrowedBooks.stream()
+        List<BorrowedBookResponse> bookResponse = alloBorrowedBooks.stream()
                 .map(bookMapper::toBorrowedBookResponse)
                 .toList();
-        return null;
+        return new PageResponse<>(
+                bookResponse,
+                alloBorrowedBooks.getNumber(),
+                alloBorrowedBooks.getSize(),
+                alloBorrowedBooks.getTotalElements(),
+                alloBorrowedBooks.getTotalPages(),
+                alloBorrowedBooks.isFirst(),
+                alloBorrowedBooks.isLast()
+        );
+    }
+
+    public PageResponse<BorrowedBookResponse> findAllReturnedBooks(int page, int size, Authentication connectedUser) {
+        User user = (User) connectedUser.getPrincipal();
+        Pageable pageable = PageRequest.of(page,size, Sort.by("createdDate").descending());
+        Page<BookTransactionHistory> alloBorrowedBooks =bookTransactionHistoryRepository.findAllReturnedBooks(pageable, user.getId());
+        List<BorrowedBookResponse> bookResponse = alloBorrowedBooks.stream()
+                .map(bookMapper::toBorrowedBookResponse)
+                .toList();
+        return new PageResponse<>(
+                bookResponse,
+                alloBorrowedBooks.getNumber(),
+                alloBorrowedBooks.getSize(),
+                alloBorrowedBooks.getTotalElements(),
+                alloBorrowedBooks.getTotalPages(),
+                alloBorrowedBooks.isFirst(),
+                alloBorrowedBooks.isLast()
+        );
+    }
+
+    public Integer updateShareableStatus(Integer bookId, Authentication connectedUser) {
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new EntityNotFoundException("No book found with ID:: " + bookId));
+        User user = (User) connectedUser.getPrincipal();
+        if(!Objects.equals(book.getOwner().getBooks(), user.getId())){
+            throw new OperationNotpermittedException("You cannot update books shareable status");
+
+        }
+        book.setShareable(!book.isShareable());
+        bookRepository.save(book);
+        return bookId;
     }
 }
