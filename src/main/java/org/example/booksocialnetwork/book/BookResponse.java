@@ -15,7 +15,7 @@ public class BookResponse {
     private String isbn;
     private String synopsis;
     private String owner;
-    private Byte[] cover;
+    private byte[] cover;
     private double rate;
     private boolean archived;
     private boolean shareable;
