@@ -1,6 +1,7 @@
 package org.example.booksocialnetwork.handler;
 
 import jakarta.mail.MessagingException;
+import org.example.booksocialnetwork.exception.OperationNotpermittedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -65,6 +66,18 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ExceptionResponse> handleException(MessagingException exp){
         return ResponseEntity
                 .status(INTERNAL_SERVER_ERROR)
+                .body(
+                        ExceptionResponse.builder()
+                                .error(exp.getMessage())
+                                .build()
+                );
+
+    }
+
+    @ExceptionHandler(OperationNotpermittedException.class)
+    public ResponseEntity<ExceptionResponse> handleException(OperationNotpermittedException exp){
+        return ResponseEntity
+                .status(BAD_REQUEST)
                 .body(
                         ExceptionResponse.builder()
                                 .error(exp.getMessage())
